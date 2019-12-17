@@ -38,6 +38,26 @@
     </div>
   </div>
 
+
+  <!-- 模态框 -->
+  <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">友情提示</h4>
+        </div>
+        <div class="modal-body">
+          <p>One fine body&hellip;</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
   <script>
     //入口函数
     $(function () {
@@ -49,33 +69,49 @@
           4.跳转首页
        */
 
-      
-      $('.input_sub').on('click',function (e) {
+
+      $('.input_sub').on('click', function (e) {
         // 表单按钮需要阻止默认跳转行为
         e.preventDefault();
-         //1.获取用户名和密码
+        //1.获取用户名和密码
         var userName = $('.input_txt').val().trim();
         var passWord = $('.input_pass').val().trim();
         // 2.非空判断
         if (userName.length == 0 || passWord.length == 0) {
-          alert('用户名与密码不能为空');
+          // alert('用户名与密码不能为空');
+          $('.modal-body>p').text('账号与密码不能为空')
+          $('#myModal').modal();
           return;
         }
         // 3.ajax请求
         $.ajax({
-          url:'http://localhost:8080/api/v1/admin/user/login',
-          type:'post',
-          dataType:'json',
-          data:{
-            username:userName,
-            password:passWord
+          url: 'http://localhost:8080/api/v1/admin/user/login',
+          type: 'post',
+          dataType: 'json',
+          data: {
+            username: userName,
+            password: passWord
           },
-          success: function(backData){
-            console.log(backData);
+          success: function (backData) {
+
+
+            // alert('登录成功');
             if (backData.code == 200) {
-              alert('登录成功');
-              // 4.跳转首页
-              window.location.href = './index.html'
+              $('.modal-body').text('登录成功');
+              $('#myModal').modal();
+              $('#myModal').on('hidden.bs.modal', function (e) {
+                // 4.跳转首页
+                localStorage.setItem('token', backData.token);
+                // do something...
+
+                window.location.href = './index.html'
+              });
+
+
+            } else {
+              // console.log(backData.msg);
+              $('.modal-body>p').text(backData.msg);
+              $('#myModal').modal();
             }
           }
         });
