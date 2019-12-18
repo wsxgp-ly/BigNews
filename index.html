@@ -57,7 +57,20 @@
     </div>
     <script src="./libs/http.js"></script>
     <script>
-       
+       $(function () {
+        //    进入首页:ajax请求个人信息,渲染到页面
+           $.ajax({
+               url:BigNew.user_info,
+               type:'get',
+               dataType:'json',
+               success: function(backData){
+                console.log(backData);
+                $('.user_info>img').attr('src',backData.data.userPic);
+                $('.user_info>span').text(backData.data.nickname);
+                $('.user_center_link>img').attr('src',backData.data.userPic);
+               }
+           });
+       })
         
     </script>
 </body>
