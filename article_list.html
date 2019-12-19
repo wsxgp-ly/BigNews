@@ -13,6 +13,7 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./pagination/josecebe-twbs-pagination-5103bc4/jquery.twbsPagination.min.js"></script>
 </head>
 
 <body>
@@ -69,9 +70,111 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <ul id="pagination" class="pagination-sm"></ul>
             </div>
         </div>
     </div>
+    <script id="cat_list" type="text/html">
+        <option value="">所有分类</option>
+        {{ each data v }}
+        <option value="{{ v.id }}">{{ v.name }}</option>
+        {{ /each }}
+    </script>
+    <script id="art_list" type="text/html">
+        {{each data.data v}}
+        <tr>
+            <td>{{v.title}}</td>
+            <td>{{v.author}}</td>
+            <td>{{v.category}}</td>
+            <td class="text-center">{{v.date}}</td>
+            <td class="text-center">{{v.atate}}</td>
+            <td class="text-center">
+                <a href="article_edit.html?id={{ v.id }}" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:void(0);" data-id="{{ v.id }}" class="btn btn-danger btn-xs delete">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script src="./libs/http.js"></script>
+    <script>
+        $(function () {
+            // 请求所有文章分类
+            $.ajax({
+                url: BigNew.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    // 把分类渲染到下拉列表中
+                    $('#selCategory').html(template('cat_list', backData));
+
+                }
+            });
+
+            // 给筛选按钮注册点击事件
+            $('#btnSearch').click(function (e) {
+                e.preventDefault();
+
+                getArticleList(1)
+            });
+            // 一进到页面就触发一次
+
+            $('#btnSearch').click();
+
+            /**
+            * @description:加载分页数据
+            * @param {type} currentPage 当前页数
+            * @return: 
+            */
+            function getArticleList(currentPage) {
+                $.ajax({
+                    url: BigNew.article_query,
+                    type: 'get',
+                    dataType: 'json',
+                    data: {
+                        type: $('#selCategory').val(),
+                        state: $('#selStatus').val(),
+                        page: currentPage,
+                        perpage: 8,
+                    },
+                    success: function (backData) {
+                        // 引擎模板渲染到页面
+                        $('.table>tbody').html(template('art_list', backData));
+                        // 加载分页插件
+                        loadPagination(backData.data.totalPage,currentPage);
+                    }
+                });
+            };
+
+            /**
+            * @description:加载分页插件
+            * @param {type} totalPage 总页数
+            * @param {type} startPage 总页数
+            * @return: 
+            */
+            function loadPagination(totalPage, startPage) {
+                $('#pagination').twbsPagination('destroy');
+                $('#pagination').twbsPagination({
+                    totalPages: totalPage,//总页数
+                    visiblePages: 8,//可见页数
+                    startPage: startPage,//起始页
+                    first: '首页',
+                    last: '尾页',
+                    prev: '上一页',
+                    next: '下一页',
+                    onPageClick: function (event, page) {
+                        $('#page-content').text('Page ' + page);
+                        // 当点击的页数与当前页数不一致才发送ajax请求  
+                        // 加上这个限制条件是为了避免 递归死循环
+                        if (page != startPage) {
+                            getArticleList(page);
+                        }
+                    }
+                });
+            }
+
+        })
+    </script>
 </body>
 
 </html>
