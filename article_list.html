@@ -87,7 +87,7 @@
             <td>{{v.author}}</td>
             <td>{{v.category}}</td>
             <td class="text-center">{{v.date}}</td>
-            <td class="text-center">{{v.atate}}</td>
+            <td class="text-center">{{v.state}}</td>
             <td class="text-center">
                 <a href="article_edit.html?id={{ v.id }}" class="btn btn-default btn-xs">编辑</a>
                 <a href="javascript:void(0);" data-id="{{ v.id }}" class="btn btn-danger btn-xs delete">删除</a>
@@ -115,7 +115,7 @@
             $('#btnSearch').click(function (e) {
                 e.preventDefault();
 
-                getArticleList(1)
+                getArticleList(1,true)
             });
             // 一进到页面就触发一次
 
@@ -126,7 +126,7 @@
             * @param {type} currentPage 当前页数
             * @return: 
             */
-            function getArticleList(currentPage) {
+            function getArticleList(currentPage,flag) {
                 $.ajax({
                     url: BigNew.article_query,
                     type: 'get',
@@ -141,7 +141,10 @@
                         // 引擎模板渲染到页面
                         $('.table>tbody').html(template('art_list', backData));
                         // 加载分页插件
-                        loadPagination(backData.data.totalPage,currentPage);
+                        // 避免递归的方法一  getArticleList 添加一个布尔值类型参数 
+                        if (flag) {
+                            loadPagination(backData.data.totalPage,currentPage);
+                        }
                     }
                 });
             };
@@ -166,9 +169,11 @@
                         $('#page-content').text('Page ' + page);
                         // 当点击的页数与当前页数不一致才发送ajax请求  
                         // 加上这个限制条件是为了避免 递归死循环
-                        if (page != startPage) {
-                            getArticleList(page);
-                        }
+                        // 避免递归的方法二  
+                        // if (page != startPage) {
+                        //     getArticleList(page);
+                        // }
+                        getArticleList(page);
                     }
                 });
             }
