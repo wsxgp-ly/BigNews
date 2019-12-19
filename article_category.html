@@ -124,6 +124,8 @@
                     $('#myModal .btn-primary').text('编辑');
                     $('#recipient-name').val($(target).parent().prev().prev().text());
                     $('#message-text').val($(target).parent().prev().text());
+                    // 把编辑按钮的data-id 赋值给 模态框的确定按钮
+                    $('#myModal .btn-primary').attr('data-id',$(target).attr('data-id'));
                 }
             })
 
@@ -146,6 +148,24 @@
                         success: function(backData){
                             if (backData.code == 201) {
                                 alert('新增成功');
+                                window.location.reload();
+                            }
+                        }
+                    });
+                } else {
+                    // 编辑分类
+                    $.ajax({
+                        url:BigNew.category_edit,
+                        type:'post',
+                        dataType:'json',
+                        data:{
+                            id:$(this).attr('data-id'),
+                            name:$('#recipient-name').val(),
+                            slug:$('#message-text').val()
+                        },
+                        success: function(backData){
+                            if (backData.code == 200) {
+                                alert('修改成功');
                                 window.location.reload();
                             }
                         }
