@@ -84,6 +84,12 @@
                $(this).addClass('active').siblings().removeClass('active');
            });
 
+        //    退出登录
+           $('.logout').click(function () {
+               localStorage.removeItem('token');
+               window.location.href = './login.html';
+           })
+
        })
         
     </script>
