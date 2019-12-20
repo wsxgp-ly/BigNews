@@ -176,7 +176,26 @@
                         getArticleList(page);
                     }
                 });
-            }
+            };
+
+            // 删除文章  因为是动态生成的删除按钮,所以需要委托注册事件
+            $('.table>tbody').on('click','.delete',function () {
+                var id = $(this).attr('data-id');
+                console.log(id);
+                $.ajax({
+                    url:BigNew.article_delete,
+                    type:'post',
+                    dataType:'json',
+                    data:{id:id},
+                    success: function(backData){
+                        console.log(backData);
+                        if (backData.code == 204) {
+                            alert('删除成功');
+                            window.location.reload();
+                        }
+                    }
+                });
+            })
 
         })
     </script>
