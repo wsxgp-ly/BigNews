@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- 1.导包 -->
+    <link type="text/css" rel="stylesheet" href="./jedate-6.5.0/test/jeDate-test.css">
+    <link type="text/css" rel="stylesheet" href="./jedate-6.5.0/skin/jedate.css">
+    <script type="text/javascript" src="./jedate-6.5.0/src/jedate.js"></script>
+</head>
+
+<body>
+    <!-- 2.HTML结构 -->
+    <div class="jeitem">
+        <label class="jelabel">点击图标</label>
+        <div class="jeinpbox">
+            <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+            <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD',theme:{bgcolor:'#D91680',pnColor:'#FF6653'}})"></div>
+        </div>
+    </div>
+
+    <script>
+        /* 3.js初始化 */
+        jeDate("#testico", {
+            
+            theme:{bgcolor:"#D91680",pnColor:"#FF6653"},
+            isinitVal:true, 
+            format: "YYYY-MM-DD",
+            festival:true, 
+        });
+    </script>
+</body>
+
+</html>
