@@ -98,12 +98,10 @@
                 dataType: 'json',
                 success: function (backData) {
                     $('.category').html(template('cat_list', backData));
-                    /* 2.加载文章详情 */
-                    //2.1 获取从article_list页面传递过来的参数id
-
-
                 }
             });
+            /* 2.加载文章详情 */
+            //2.1 获取从article_list页面传递过来的参数id
             var id = window.location.href.split('=')[1];
             console.log(id);
             //2.2 ajax请求文章详情

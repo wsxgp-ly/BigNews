@@ -104,7 +104,6 @@
                 type: 'get',
                 dataType: 'json',
                 success: function (backData) {
-                    console.log(backData);
                     // 把分类渲染到下拉列表中
                     $('#selCategory').html(template('cat_list', backData));
 
@@ -188,14 +187,25 @@
                     dataType:'json',
                     data:{id:id},
                     success: function(backData){
-                        console.log(backData);
                         if (backData.code == 204) {
                             alert('删除成功');
                             window.location.reload();
                         }
                     }
                 });
-            })
+            });
+
+            /* 5.右上角发布文章 */
+            $('#release_btn').click(function(){
+                console.log('111111111111111');
+                /* 
+                问题： 如果在article_list.html中获取 index.html中的元素？
+                $('选择器',window.document) :   在当前页面DOM树种查询元素
+                $('选择器',window.parent.document) : 在父页面DOM树种查询元素
+                */
+                $('.level02>li:eq(1)',window.parent.document).addClass('active').siblings().removeClass('active');
+                
+            });
 
         })
     </script>

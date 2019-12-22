@@ -22,6 +22,7 @@
     <script src="./libs/jedate/js/jedate.js"></script>
     <!-- wangEditor -->
     <script src="./libs/wangEditor.min.js"></script>
+    <!-- 导入jedate+wangEditor的配置 -->
     <script src="./libs/config.js"></script>
 
 </head>
@@ -64,7 +65,7 @@
                         <div class="jeinpbox">
                             <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
                             <div class="icons jebtns"
-                                onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD',theme: { bgcolor: '#D91600', pnColor: '#FF6653' }})">
+                                onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD',theme: { bgcolor: '#D91600', pnColor: '#FF6653' },zIndex:10002})">
                             </div>
                         </div>
                     </div>
@@ -84,6 +85,87 @@
             </form>
         </div>
     </div>
+
+    <!-- 文章分类模板 -->
+    <script id="cat_list" type="text/html">
+        {{ each data v }}
+        <option value="{{ v.id }}">{{ v.name }}</option>
+        {{ /each }}
+    </script>
+
+    <script src="./libs/http.js"></script>
+    <script>
+        // 入口函数
+        $(function () {
+            //1. 获取所有分类
+            $.ajax({
+                url: BigNew.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    // 渲染到页面
+                    $('.category').html(template('cat_list', backData));
+                }
+            });
+
+            // 2.文件预览
+            //1.给file表单元素注册onchange事件
+            $('#inputCover').change(function () {
+                //1.2 获取用户选择的图片
+                var file = this.files[0];
+                //1.3 将文件转为src路径
+                var url = URL.createObjectURL(file);
+                //1.4 将url路径赋值给img标签的src
+                $('.article_cover').attr('src', url);
+            });
+
+            // 3.文件上传
+            // 3.1 给发布按钮设置点击事件
+            $('.btn-release').click(function (e) {
+                e.preventDefault();
+                console.log('55555555555');
+                releaseArticle('已发布')
+            });
+            // 3.2 给草稿按钮设置点击事件
+            $('.btn-draft').click(function (e) {
+                e.preventDefault();
+                console.log('55666666');
+                releaseArticle('草稿')
+                
+            });
+
+            // 3.3 封装一个文章发布函数
+            function releaseArticle(state) {
+               
+                    var fd = new FormData($('#form')[0])
+                    // 日期
+                    fd.append('date',$('#testico').val());
+                    // 富文本编辑器
+                    fd.append('content',editor.txt.html());
+                    // 文章状态
+                    fd.append('state',state);
+                    $.ajax({
+                        url:BigNew.article_publish,
+                        type:'post',
+                        dataType:'json',
+                        data:fd,
+                        contentType: false,
+                        processData: false,
+                        success: function(backData){
+                            console.log(backData);
+                            if (backData.code == 200) {
+                                alert(backData.msg);
+                                //跳转到文章列表页面
+                                window.location.href = './article_list.html';
+                                // 左侧文章列表高亮
+                                $('.level02>li:eq(0)',window.parent.document).addClass('active').siblings().removeClass('active');
+                            }
+                        }
+                    });
+            }
+        });
+
+    </script>
 </body>
 
 </html>
