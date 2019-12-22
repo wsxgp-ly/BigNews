@@ -83,7 +83,7 @@
                     // $('.password').val(backData.data.password);
 
                     for (var key in backData.data) {
-                        console.log(key);
+                        // console.log(key);
                         $('.' + key).val(backData.data[key]);
 
                     }
@@ -114,7 +114,7 @@
                     contentType: false,
                     processData: false,
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         if (backData.code == 200) {
                             alert('修改成功');
                             window.parent.location.reload();

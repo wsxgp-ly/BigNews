@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/main.css">
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <script src="./libs/template-web.js"></script>
+  <script src="./libs/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -142,7 +143,8 @@
         </tbody>
       </table>
       <div class="row text-center">
-        <ul class="pagination pagination-sm">
+        <ul id="pagination" class="pagination-sm"></ul>
+        <!-- <ul class="pagination pagination-sm">
           <li class="page-item first disabled"><a href="#" class="page-link">首页</a></li>
           <li class="page-item prev disabled"><a href="#" class="page-link">上一页</a></li>
           <li class="page-item active"><a href="#" class="page-link">1</a></li>
@@ -155,11 +157,131 @@
           <li class="page-item next"><a href="#" class="page-link">下一页</a></li>
           <li class="page-item last"><a href="#" class="page-link">尾页</a></li>
         </ul>
-        <ul id="pagination" class="pagination-sm"></ul>
+        <ul id="pagination" class="pagination-sm"></ul> -->
       </div>
 
     </div>
   </div>
+  <script id="com_list" type="text/html">
+    {{each data.data v}}
+    <tr>
+      <td>{{v.author}}</td>
+      <td>{{v.cintent}}</td>
+      <td>{{v.title}}</td>
+      <td>{{v.date}} {{v.time}}</td>
+      <td>{{v.state}}</td>
+      <td class="text-center">
+        {{if v.state == "待审核"}}
+        <a href="javascript:void(0);;" data-id="{{v.id}}" class="btn btn-success btn-xs btn-pass">批准</a>
+        {{else if v.state == "已通过"}}
+        <a href="javascript:void(0);;" data-id="{{v.id}}" class="btn btn-warning btn-xs btn-reject">拒绝</a>
+        {{/if}}
+        <a href="javascript:void(0);;" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
+      </td>
+    </tr>
+    {{/each}}
+    
+  </script>
+  <script src="./libs/http.js"></script>
+  <script>
+    $(function () {
+      // 1.获取文章评论列表
+      getcommentList(1);
+      function getcommentList(currentPage) {
+        $.ajax({
+          url: BigNew.comment_list,
+          type: 'get',
+          dataType: 'json',
+          data: {
+            page: currentPage,
+            perpage: 10
+          },
+          success: function (backData) {
+            console.log(backData);
+            $('.table>tbody').html(template('com_list', backData));
+            // 加载分页插件
+            loadPagination(backData.data.totalPage,currentPage)
+
+          }
+        });
+      };
+
+      //  2.加载分页插件
+      function loadPagination(totalPage, startPage) {
+        $('#pagination').twbsPagination('destroy');
+        $('#pagination').twbsPagination({
+          totalPages: totalPage,//总页数
+          visiblePages: 8,//可见页数
+          startPage: startPage,//起始页
+          first: '首页',
+          last: '尾页',
+          prev: '上一页',
+          next: '下一页',
+          onPageClick: function (event, page) {
+            $('#page-content').text('Page ' + page);
+             
+            if (page != startPage) {
+                 getcommentList(page);
+            }
+           
+          }
+        });
+      };
+
+      // 3.审批
+      $('.table>tbody').on('click','.btn-pass',function () {
+        var id = $(this).attr('data-id');
+        // console.log(id);
+        $.ajax({
+          url:BigNew.comment_pass,
+          type:'post',
+          dataType:'json',
+          data:{id:id},
+          success: function(backData){
+            if (backData.code == 200) {
+              alert('已通过');
+              window.location.reload();
+            }
+          }
+        });
+      });
+      // 3.拒绝
+      $('.table>tbody').on('click','.btn-reject',function () {
+        var id = $(this).attr('data-id');
+        // console.log(id);
+        $.ajax({
+          url:BigNew.comment_reject,
+          type:'post',
+          dataType:'json',
+          data:{id:id},
+          success: function(backData){
+            if (backData.code == 200) {
+              alert('已拒绝');
+              window.location.reload();
+            }
+          }
+        });
+      });
+      // 3.删除
+      $('.table>tbody').on('click','.btn-delete',function () {
+        var id = $(this).attr('data-id');
+        // console.log(id);
+        $.ajax({
+          url:BigNew.comment_delete,
+          type:'post',
+          dataType:'json',
+          data:{id:id},
+          success: function(backData){
+            if (backData.code == 200) {
+              alert('已删除');
+              window.location.reload();
+            }
+          }
+        });
+      });
+
+    })
+  </script>
 </body>
 
 </html>
